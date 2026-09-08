@@ -203,7 +203,7 @@ function cleanAndParseJson(raw) {
     }
 
     return JSON.parse(clean);
-  } catch (e) {
+  } catch {
     return null;
   }
 }

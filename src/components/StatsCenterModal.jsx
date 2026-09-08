@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, BarChart3, RefreshCw } from 'lucide-react';
+import { X, BarChart3 } from 'lucide-react';
 import { sounds } from '../utils/audioEffects';
 
 export default function StatsCenterModal({ onClose }) {
   const [selectedLeague, setSelectedLeague] = useState('espana');
   const [dynamicTable, setDynamicTable] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const leagueStats = {
     espana: {
@@ -89,7 +88,6 @@ export default function StatsCenterModal({ onClose }) {
   useEffect(() => {
     let active = true;
     async function fetchStandings() {
-      setLoading(true);
       try {
         const res = await fetch(`/api/matches/standings?league=${selectedLeague}`);
         const data = await res.json();
@@ -98,10 +96,8 @@ export default function StatsCenterModal({ onClose }) {
         } else if (active) {
           setDynamicTable(null);
         }
-      } catch (err) {
+      } catch {
         if (active) setDynamicTable(null);
-      } finally {
-        if (active) setLoading(false);
       }
     }
     fetchStandings();

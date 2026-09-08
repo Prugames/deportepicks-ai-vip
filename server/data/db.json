@@ -1,6 +1,98 @@
 {
   "codes": [
     {
+      "code": "VIP-PBX2-EMX7",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:46:59.360Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-ZZ8D-6ZR5",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:46:59.360Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-4LFY-8D5Q",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:46:59.360Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-WP8D-WK8G",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:46:59.360Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-Q9F6-F2C3",
+      "durationDays": 30,
+      "isClaimed": true,
+      "claimedAt": "2026-09-08T09:46:59.367Z",
+      "expiresAt": "2026-10-08T09:46:59.367Z",
+      "createdAt": "2026-09-08T09:46:59.360Z",
+      "label": "Lote VIP (30d)",
+      "claimedBy": "Usuario VIP"
+    },
+    {
+      "code": "VIP-W4VP-DV5W",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:45:52.271Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-LQW2-JWZF",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:45:52.271Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-MQ5X-HFYW",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:45:52.271Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-WBES-QYQ8",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:45:52.271Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-UKGV-FNDX",
+      "durationDays": 30,
+      "isClaimed": true,
+      "claimedAt": "2026-09-08T09:45:52.278Z",
+      "expiresAt": "2026-10-08T09:45:52.278Z",
+      "createdAt": "2026-09-08T09:45:52.271Z",
+      "label": "Lote VIP (30d)",
+      "claimedBy": "Usuario VIP"
+    },
+    {
       "code": "VIP-MMUC-U4U4",
       "durationDays": 30,
       "isClaimed": false,
