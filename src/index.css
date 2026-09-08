@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #06090e;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+    background-image: 
+      radial-gradient(ellipse at 50% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 0% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* 3D Perspective Card System */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.tilt-card-inner {
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+}
+
+.tilt-card-inner:hover {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(56, 189, 248, 0.15);
+}
+
+/* Luxury Terminal Card Surfaces */
+.terminal-card {
+  background: linear-gradient(145deg, #0b1019 0%, #070a10 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+
+.terminal-card:hover::before {
+  left: 100%;
+}
+
+.terminal-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+/* Radar Scanner Animations */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.radar-sweep-line {
+  animation: radarSweep 3s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes pitchScanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+
+.pitch-scanline {
+  animation: pitchScanline 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Holographic Shimmer */
+@keyframes holoShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.holo-text {
+  background: linear-gradient(90deg, #e2e8f0 0%, #38bdf8 25%, #818cf8 50%, #34d399 75%, #e2e8f0 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: holoShimmer 6s linear infinite;
+}
+
+/* Live Pulse Micro Glow */
+@keyframes livePulsar {
+  0%, 100% { transform: scale(1); opacity: 1; filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.8)); }
+  50% { transform: scale(1.25); opacity: 0.5; filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.4)); }
+}
+
+.live-dot {
+  animation: livePulsar 1.6s ease-in-out infinite;
+}
+
+/* Tabular figures */
+.tabular-numbers {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom Glass Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #06090e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
