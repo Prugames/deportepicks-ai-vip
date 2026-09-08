@@ -20,18 +20,42 @@ import LiveTacticalPitch from './LiveTacticalPitch';
 import RadarScanner from './RadarScanner';
 import NumberCounter from './NumberCounter';
 
-const DEFAULT_SIMULATION_DIST = {
-  "2 - 1": 18.4,
-  "1 - 1": 15.2,
-  "2 - 0": 13.8,
-  "1 - 0": 11.5,
-  "3 - 1": 9.2,
-  "0 - 0": 7.1,
-  "1 - 2": 6.8,
-  "2 - 2": 6.5,
-  "3 - 0": 5.4,
-  "Otros": 6.1
-};
+function calculateMatchSimulation(match, withJitter = false) {
+  if (!match) return { "2 - 1": 18.0, "1 - 1": 15.0, "2 - 0": 13.0, "Otros": 54.0 };
+  const home = match.homeTeam || {};
+  const away = match.awayTeam || {};
+  const homeGoalsAvg = home.goalsFor && home.gamesPlayed ? (home.goalsFor / Math.max(1, home.gamesPlayed)) * 1.08 : 1.6;
+  const awayGoalsAvg = away.goalsFor && away.gamesPlayed ? (away.goalsFor / Math.max(1, away.gamesPlayed)) * 0.95 : 1.2;
+
+  const lambda = Math.max(0.4, Math.min(4.2, homeGoalsAvg));
+  const mu = Math.max(0.4, Math.min(3.8, awayGoalsAvg));
+
+  const poisson = (l, k) => {
+    let p = Math.exp(-l);
+    for (let i = 1; i <= k; i++) p *= l / i;
+    return p;
+  };
+
+  const dist = {};
+  for (let h = 0; h <= 6; h++) {
+    for (let a = 0; a <= 6; a++) {
+      dist[`${h} - ${a}`] = poisson(lambda, h) * poisson(mu, a);
+    }
+  }
+
+  const sorted = Object.entries(dist).sort(([, a], [, b]) => b - a);
+  const topScores = sorted.slice(0, 9);
+  const topSum = topScores.reduce((acc, [, p]) => acc + p, 0);
+  const otrosVal = Math.max(0.5, parseFloat(((1 - topSum) * 100).toFixed(1)));
+
+  const result = {};
+  topScores.forEach(([score, p]) => {
+    const jitter = withJitter ? (Math.random() - 0.5) * 0.6 : 0;
+    result[score] = parseFloat(Math.max(0.5, (p * 100) + jitter).toFixed(1));
+  });
+  result["Otros"] = otrosVal;
+  return result;
+}
 
 export default function MatchDetailModal({ 
   match, 
@@ -42,9 +66,17 @@ export default function MatchDetailModal({
   const [activeTab, setActiveTab] = useState('ai_report');
   const [aiReport, setAiReport] = useState(null);
   const [loadingAi, setLoadingAi] = useState(true);
-  const [simulationData, setSimulationData] = useState(DEFAULT_SIMULATION_DIST);
+  const [customSim, setCustomSim] = useState(null);
   const [simulating, setSimulating] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+
+  // Derive simulation data; reset custom jitter simulation if match changes
+  const [lastMatchId, setLastMatchId] = useState(match?.id);
+  if (match?.id !== lastMatchId) {
+    setLastMatchId(match?.id);
+    setCustomSim(null);
+  }
+  const simulationData = customSim || calculateMatchSimulation(match, false);
 
   const fetchAiAnalysis = useCallback(async (forceRefresh = false) => {
     if (!match?.id) return;
@@ -70,10 +102,10 @@ export default function MatchDetailModal({
     setSimulating(true);
     sounds.playRadarScan();
     setTimeout(() => {
-      setSimulationData(DEFAULT_SIMULATION_DIST);
+      setCustomSim(calculateMatchSimulation(match, true));
       setSimulating(false);
-    }, 400);
-  }, []);
+    }, 450);
+  }, [match]);
 
   useEffect(() => {
     let active = true;

@@ -1,6 +1,98 @@
 {
   "codes": [
     {
+      "code": "VIP-D65N-VRF9",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T10:04:41.711Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-6Y9B-K77A",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T10:04:41.711Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-EATB-T49L",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T10:04:41.711Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-QNVC-K7SX",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T10:04:41.711Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-PJ8M-GHP7",
+      "durationDays": 30,
+      "isClaimed": true,
+      "claimedAt": "2026-09-08T10:04:41.716Z",
+      "expiresAt": "2026-10-08T10:04:41.716Z",
+      "createdAt": "2026-09-08T10:04:41.711Z",
+      "label": "Lote VIP (30d)",
+      "claimedBy": "Nuevo Miembro VIP"
+    },
+    {
+      "code": "VIP-MHPN-DFP2",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:48:05.902Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-P68V-WRTP",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:48:05.902Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-4R5U-BTJ8",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:48:05.902Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-3FBW-E4ZE",
+      "durationDays": 30,
+      "isClaimed": false,
+      "claimedAt": null,
+      "expiresAt": null,
+      "createdAt": "2026-09-08T09:48:05.902Z",
+      "label": "Lote VIP (30d)"
+    },
+    {
+      "code": "VIP-ZHWN-GAAA",
+      "durationDays": 30,
+      "isClaimed": true,
+      "claimedAt": "2026-09-08T09:48:05.913Z",
+      "expiresAt": "2026-10-08T09:48:05.913Z",
+      "createdAt": "2026-09-08T09:48:05.902Z",
+      "label": "Lote VIP (30d)",
+      "claimedBy": "Usuario VIP"
+    },
+    {
       "code": "VIP-PBX2-EMX7",
       "durationDays": 30,
       "isClaimed": false,

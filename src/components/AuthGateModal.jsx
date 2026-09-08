@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { KeyRound, User, ArrowRight, AlertCircle, CheckCircle2, Crown, ExternalLink, Sparkles, UserCheck, X } from 'lucide-react';
+import { KeyRound, User, ArrowRight, AlertCircle, CheckCircle2, Crown, ExternalLink, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/audioEffects';
 import { TelegramIcon, WhatsAppIcon, InstagramIcon } from './SocialIcons';
 import { SOCIAL_LINKS } from '../constants/socials';
 
 export default function AuthGateModal({ onAuthenticated, onClose }) {
-  const [authMode, setAuthMode] = useState('code'); // 'code' | 'guest'
   const [username, setUsername] = useState(() => {
     return localStorage.getItem('deportepicks_user_name') || '';
   });
@@ -23,40 +22,18 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
       return;
     }
 
+    if (!code.trim()) {
+      setError('Por favor escribe tu código de acceso VIP. Si no tienes uno, únete a nuestras comunidades abajo para reclamarlo GRATIS.');
+      sounds.playGlitchSound();
+      return;
+    }
+
     setLoading(true);
     setError('');
     setSuccessMsg('');
     sounds.playRadarScan();
 
     try {
-      // 1. Guest Login Mode
-      if (authMode === 'guest') {
-        const res = await fetch('/api/auth/guest-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: username.trim() })
-        });
-        const data = await res.json();
-        if (data.success) {
-          sounds.playSuccess();
-          localStorage.setItem('deportepicks_user_name', username.trim());
-          confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-          setSuccessMsg(`¡Bienvenido como Invitado, ${username.trim()}! Acceso libre.`);
-          setTimeout(() => onAuthenticated(data), 800);
-        } else {
-          setError(data.message || 'Error al iniciar como invitado.');
-        }
-        return;
-      }
-
-      // 2. VIP Code Mode
-      if (!code.trim()) {
-        setError('Por favor escribe tu código de acceso VIP.');
-        sounds.playGlitchSound();
-        setLoading(false);
-        return;
-      }
-
       const res = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,7 +58,7 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
         }, 800);
       } else {
         sounds.playGlitchSound();
-        setError(data.message || 'Código incorrecto o vencido.');
+        setError(data.message || 'Código incorrecto o vencido. Por favor ingresa un código válido o únete a nuestras comunidades para obtener uno GRATIS.');
       }
     } catch {
       setError('Error al conectar con el servidor.');
@@ -91,7 +68,6 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
   };
 
   const handleUseDemo = (demoCode, demoName = '') => {
-    setAuthMode('code');
     setCode(demoCode);
     if (demoName) setUsername(demoName);
     sounds.playClick();
@@ -121,7 +97,7 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
             className="w-full h-full rounded-full object-cover border-2 border-red-500/60 shadow-xl"
           />
           <div className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-red-600 text-white font-mono text-[9px] font-black uppercase tracking-wider border border-black shadow">
-            {authMode === 'guest' ? 'FREE' : 'VIP'}
+            VIP
           </div>
         </div>
 
@@ -129,37 +105,14 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
         <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1 font-sans">
           777 <span className="text-red-500">PICKS</span>
         </h2>
-        <p className="text-xs text-slate-400 mb-5 font-sans max-w-sm mx-auto">
-          Picks de Confianza • Inteligencia estadística predictiva y análisis de 8 ligas de fútbol.
+        <p className="text-xs text-slate-400 mb-4 font-sans max-w-sm mx-auto">
+          Picks de Confianza • Acceso exclusivo para miembros con código VIP verificado.
         </p>
 
-        {/* Tab Switcher: Código VIP vs Invitados */}
-        <div className="flex rounded-xl bg-[#161b22] p-1 border border-white/10 mb-5">
-          <button
-            type="button"
-            onClick={() => { sounds.playClick(); setAuthMode('code'); setError(''); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer ${
-              authMode === 'code'
-                ? 'bg-emerald-500 text-black shadow-md font-bold'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <KeyRound className="w-3.5 h-3.5" />
-            <span>Con Código VIP</span>
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => { sounds.playClick(); setAuthMode('guest'); setError(''); }}
-            className={`flex-1 py-2 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition cursor-pointer ${
-              authMode === 'guest'
-                ? 'bg-white text-slate-950 shadow-md font-bold'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <UserCheck className="w-3.5 h-3.5" />
-            <span>Entrar como Invitado</span>
-          </button>
+        {/* VIP Lock Status Indicator */}
+        <div className="flex items-center justify-center space-x-2 py-2 px-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider mb-5">
+          <KeyRound className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>Acceso Protegido por Código VIP</span>
         </div>
 
         {/* Input Form */}
@@ -187,37 +140,27 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
             </div>
           </div>
 
-          {/* 2. Access Code field (Only in VIP Code Mode) */}
-          {authMode === 'code' ? (
-            <div>
-              <label className="block text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 font-semibold">
-                Código de Acceso VIP
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
-                  <KeyRound className="w-4 h-4 text-emerald-400" />
-                </div>
-                <input
-                  type="text"
-                  value={code}
-                  onChange={(e) => {
-                    setCode(e.target.value.toUpperCase());
-                    setError('');
-                  }}
-                  placeholder="EJ: VIP-PREMIUM-777 O DEPORTEPICKS"
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#161b22] border border-white/10 rounded-xl text-sm font-mono font-bold text-emerald-400 placeholder:text-slate-500 tracking-wider focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
-                />
+          {/* 2. Access Code field */}
+          <div>
+            <label className="block text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1 font-semibold">
+              Código de Acceso VIP
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <KeyRound className="w-4 h-4 text-emerald-400" />
               </div>
+              <input
+                type="text"
+                value={code}
+                onChange={(e) => {
+                  setCode(e.target.value.toUpperCase());
+                  setError('');
+                }}
+                placeholder="EJ: VIP-PREMIUM-777 O DEPORTEPICKS"
+                className="w-full pl-10 pr-4 py-2.5 bg-[#161b22] border border-white/10 rounded-xl text-sm font-mono font-bold text-emerald-400 placeholder:text-slate-500 tracking-wider focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+              />
             </div>
-          ) : (
-            <div className="p-3 bg-sky-500/10 border border-sky-500/20 rounded-xl text-xs text-sky-200 font-sans flex items-start space-x-2">
-              <Sparkles className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold block">Pase Libre para Invitados:</span>
-                <span>Explora los 11 partidos, las 8 ligas de fútbol, cuotas en vivo y estadísticas sin necesidad de código inicial.</span>
-              </div>
-            </div>
-          )}
+          </div>
 
           {error && (
             <div className="flex items-center space-x-2 text-rose-300 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl text-xs font-sans">
@@ -236,44 +179,38 @@ export default function AuthGateModal({ onAuthenticated, onClose }) {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 px-4 rounded-xl font-bold text-xs tracking-wider uppercase transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 shadow-lg ${
-              authMode === 'code'
-                ? 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-emerald-500/20'
-                : 'bg-white hover:bg-slate-200 text-black shadow-white/10'
-            }`}
+            className="w-full py-3 px-4 rounded-xl font-bold text-xs tracking-wider uppercase transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 shadow-lg bg-emerald-500 hover:bg-emerald-400 text-black shadow-emerald-500/20"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
-                <span>{authMode === 'code' ? 'Desbloquear con Código VIP' : 'Ingresar como Invitado (Free Demo)'}</span>
+                <span>Desbloquear con Código VIP</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>
         </form>
 
-        {/* Demo shortcuts for Code mode */}
-        {authMode === 'code' && (
-          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-center space-x-2">
-            <span className="text-[11px] text-slate-500 font-sans">Accesos rápidos:</span>
-            <button
-              type="button"
-              onClick={() => handleUseDemo('DeportePicks', 'Dueño DeportePicks')}
-              className="text-[11px] font-mono text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded cursor-pointer transition flex items-center space-x-1"
-            >
-              <Crown className="w-3 h-3" />
-              <span>Owner ("DeportePicks")</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleUseDemo('VIP-PREMIUM-777', 'Usuario VIP')}
-              className="text-[11px] font-mono text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded cursor-pointer transition"
-            >
-              VIP-PREMIUM-777
-            </button>
-          </div>
-        )}
+        {/* Demo shortcuts */}
+        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-center space-x-2">
+          <span className="text-[11px] text-slate-500 font-sans">Accesos rápidos:</span>
+          <button
+            type="button"
+            onClick={() => handleUseDemo('DeportePicks', 'Dueño DeportePicks')}
+            className="text-[11px] font-mono text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded cursor-pointer transition flex items-center space-x-1"
+          >
+            <Crown className="w-3 h-3" />
+            <span>Owner ("DeportePicks")</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleUseDemo('VIP-PREMIUM-777', 'Usuario VIP')}
+            className="text-[11px] font-mono text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded cursor-pointer transition"
+          >
+            VIP-PREMIUM-777
+          </button>
+        </div>
 
         {/* SOCIAL NETWORKS SECTION - REQUIRED EXACT TEXT */}
         <div className="mt-6 pt-5 border-t border-white/10 text-left">

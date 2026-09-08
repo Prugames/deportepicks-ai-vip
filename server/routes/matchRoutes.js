@@ -1,5 +1,5 @@
 import express from 'express';
-import { generateMatches, LEAGUES, getLeagueStandings, syncRealFootballData } from '../services/footballDataService.js';
+import { generateMatches, LEAGUES, getLeagueStandings, syncRealFootballData, enrichMatchWithRealData } from '../services/footballDataService.js';
 import { generateAiMatchReport } from '../services/aiService.js';
 
 const router = express.Router();
@@ -48,9 +48,33 @@ router.get('/', (req, res) => {
       matches = matches.filter(m => m.leagueId.toLowerCase() === league.toLowerCase());
     }
 
-    // Filter by timeframe: 'today' | 'tomorrow' | 'all'
+    // Filter by timeframe: 'today' | 'tomorrow' | 'all' (dynamically evaluated against current execution date)
     if (timeframe && timeframe !== 'all') {
-      matches = matches.filter(m => m.timeframe === timeframe);
+      const now = new Date();
+      const todayY = now.getUTCFullYear();
+      const todayM = now.getUTCMonth();
+      const todayD = now.getUTCDate();
+
+      const tom = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const tomY = tom.getUTCFullYear();
+      const tomM = tom.getUTCMonth();
+      const tomD = tom.getUTCDate();
+
+      matches = matches.filter(m => {
+        if (!m.kickoff) return false;
+        const kd = new Date(m.kickoff);
+        const ky = kd.getUTCFullYear();
+        const km = kd.getUTCMonth();
+        const kdDay = kd.getUTCDate();
+
+        if (timeframe === 'today') {
+          return ky === todayY && km === todayM && kdDay === todayD;
+        }
+        if (timeframe === 'tomorrow') {
+          return ky === tomY && km === tomM && kdDay === tomD;
+        }
+        return true;
+      });
     }
 
     // Filter by match status: 'LIVE' | 'SCHEDULED' | 'FINISHED'
@@ -100,15 +124,16 @@ router.post('/sync', async (req, res) => {
   }
 });
 
-// Get single match by ID
-router.get('/:id', (req, res) => {
+// Get single match by ID (enriched with real ESPN summary and live stats)
+router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const matches = generateMatches();
-    const match = matches.find(m => m.id === id);
+    let match = matches.find(m => m.id === id);
     if (!match) {
       return res.status(404).json({ success: false, message: 'Partido no encontrado.' });
     }
+    match = await enrichMatchWithRealData(match);
     return res.json({ success: true, match });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -121,12 +146,13 @@ router.post('/:id/ai-analysis', async (req, res) => {
     const { id } = req.params;
     const { forceRefresh = false } = req.body;
     const matches = generateMatches();
-    const match = matches.find(m => m.id === id);
+    let match = matches.find(m => m.id === id);
 
     if (!match) {
       return res.status(404).json({ success: false, message: 'Partido no encontrado.' });
     }
 
+    match = await enrichMatchWithRealData(match);
     const aiReport = await generateAiMatchReport(match, forceRefresh);
 
     return res.json({
